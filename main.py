@@ -1,8 +1,7 @@
 from PyQt5.QtWidgets import QApplication
-from ui import UI
 from argparse import ArgumentParser
+from ui import UI
 from crypto import *
-from time import process_time
 
 def parseArgs() -> ArgumentParser:
     parser = ArgumentParser(description='Program do generowania kluczy asymetrycznych oraz szyfrowania i deszyfrowania plików')
