@@ -1,13 +1,5 @@
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
-from PyQt5.uic import loadUi
-
-
-class UI(QMainWindow):
-    def __init__(self):
-        super(UI, self).__init__()
-
-        loadUi("application.ui", self)
-        self.show()
+from PyQt5.QtWidgets import QApplication
+from ui import UI
 
 
 if __name__ == '__main__':
