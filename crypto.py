@@ -1,7 +1,7 @@
 import rsa
 
 
-def generate_keys(bits):
+def generate_keys(length: int = 1024):
     """
     :param int bits: number of bits used to generate keys.
     :returns: a pair of string with public and private key in that order.
