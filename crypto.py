@@ -176,7 +176,7 @@ def loadPublicKeyFromFile(path: str) ->AsymmetricKey:
         return AsymmetricKey(public)
 
 def _getDefaultPadding():
-    return padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA1()), algorithm=hashes.SHA1(), label=None)
+    return padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)
 
 def _encryptAsymmetric(data: bytes, public_key: AsymmetricKey) -> bytes:
     """ encrypts data with public_key
@@ -247,14 +247,14 @@ def encrypt(data: bytes, public_key: AsymmetricKey, symmetric_encryption: Symmet
     return EncryptedFile(encrypted_data=encrypted_data,
                         asymmetric_alg=AsymmetricAlgorithm.RSA,
                         symmetric_alg=symmetric_encryption,
-                        encrypted_key_length=int(public_key.key.key_size / 8),
+                        encrypted_key_length=public_key.getKeyLengthBytes(),
                         encrypted_nonce=encrypted_nonce, encrypted_key=encrypted_key)
 
 def decrypt(encrypted_file: bytes, private_key: AsymmetricKey) -> bytes:
-    """ decrypts encrypted_data using private_key
-        :param bytes encrypted_data: bytes returned by encrypt() function(data + key)
+    """ decrypts encrypted_file using private_key
+        :param bytes encrypted_file: EncryptedFile.encrypted_file returned by encrypt
         :param AsymmetricKey private_key: key that will be used to decrypt symmetric key
-        :returns: decrypted data, without symmetric key
+        :returns: decrypted data without metadata
     """
     encrypted = EncryptedFile(encrypted_file=encrypted_file)
     decrypted_data: bytes = None
@@ -279,3 +279,4 @@ def decrypt(encrypted_file: bytes, private_key: AsymmetricKey) -> bytes:
         decrypted_data = decryptor.update(encrypted.encrypted_data) + decryptor.finalize()
 
     return decrypted_data
+    
