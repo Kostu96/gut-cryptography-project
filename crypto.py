@@ -40,6 +40,7 @@ SYMMETRIC_KEY_LENGTHS: Final[dict[SymmetricAlgorithm, list[int]]] = {
 class AsymmetricAlgorithm(IntEnum):
     RSA = 0
 
+
 class AsymmetricKey:
     def __init__(self, key: Union[RSAPrivateKey, RSAPublicKey]) -> None:
         self.key = key
