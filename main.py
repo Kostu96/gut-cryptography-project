@@ -1,3 +1,4 @@
+import base64
 import os
 from typing import Any
 from PyQt5.QtWidgets import QApplication
@@ -31,17 +32,21 @@ def parse_arguments() -> ArgumentParser:
     return parser
 
 def test():
-    public, private = generate_keys(2048)
-    text = b'Testowy test tekst abcde!@#$$321'
-    encrypted_text = encrypt(text, public)
-    encrypted_text = encrypted_text[0] + encrypted_text[1]
-    decrypted_text = decrypt(encrypted_text, private)
-    print(f'text = {text}\n')
-    print(f'encrypted = {encrypted_text}\n')
-    print(f'decrypted = {decrypted_text}')
-    
+    """ encrypts text with every symmetric algorithm with every key size and then decrypts """
+    public, private = generate_keys()
+    encrypted_list: list[tuple[str, bytes]] = []
+    for algorithm in SymmetricAlgorithm:
+        if len(SYMMETRIC_KEY_LENGTHS[algorithm]) == 0:
+            encrypted_list.append((f'{algorithm.name}(-)', encrypt(b'12345', public, algorithm).encrypted_file))
+        else:
+            for key_size in SYMMETRIC_KEY_LENGTHS[algorithm]:
+                encrypted_list.append((f'{algorithm.name}({key_size})', encrypt(b'12345', public, algorithm, key_size).encrypted_file))
 
+    for encrypted in encrypted_list:
+        print(f'{encrypted[0]} = {decrypt(encrypted[1], private)}')
+    
 def main(args: dict[str, Any]):
+    test()
     if args['command'] is None:
         app = QApplication([])
         _ = UI()
