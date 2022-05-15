@@ -1,5 +1,3 @@
-import base64
-import os
 from typing import Any
 from PyQt5.QtWidgets import QApplication
 from argparse import ArgumentParser, SUPPRESS
