@@ -18,7 +18,7 @@ class UI(QMainWindow):
 
     def gen_keys_btn_clicked(self):
         bits = int(self.bitsComboBox.currentText())
-        [pub_key, priv_key] = generate_keys(bits)
+        [pub_key, priv_key] = generate_keys(AsymmetricAlgorithm.RSA, bits)
         self.pubKeyTextEdit.setPlainText(pub_key.__str__())
         self.privKeyTextEdit.setPlainText(priv_key.__str__())
 
