@@ -516,7 +516,7 @@
            <item>
             <widget class="QLabel" name="label_4">
              <property name="text">
-              <string>    </string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -601,7 +601,7 @@
            <item>
             <widget class="QLabel" name="label_10">
              <property name="text">
-              <string>    </string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -683,7 +683,7 @@
            <item>
             <widget class="QLabel" name="label_14">
              <property name="text">
-              <string>    </string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -1393,7 +1393,7 @@
          <item>
           <widget class="QLabel" name="label_43">
            <property name="text">
-            <string>       </string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -1705,18 +1705,40 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QLabel" name="label_30">
+   <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>171</width>
-      <height>16</height>
+      <x>10</x>
+      <y>0</y>
+      <width>431</width>
+      <height>24</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Zalogowany jako Alicja</string>
-    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Użytkownik:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="msgTypedLineEdit_7"/>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </widget>
   </widget>
  </widget>
