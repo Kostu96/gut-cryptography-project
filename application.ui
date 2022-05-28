@@ -171,6 +171,7 @@
           <layout class="QHBoxLayout" name="horizontalLayout_14">
            <item>
             <widget class="QPushButton" name="encodeBtn">
+
              <property name="text">
               <string>Koduj swoim kluczem publicznym</string>
              </property>
