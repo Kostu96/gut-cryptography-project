@@ -170,7 +170,7 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_14">
            <item>
-            <widget class="QPushButton" name="encodeBtn_4">
+            <widget class="QPushButton" name="encodeBtn">
              <property name="text">
               <string>Koduj swoim kluczem publicznym</string>
              </property>
@@ -228,7 +228,7 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_15">
            <item>
-            <widget class="QPushButton" name="decode_Btn">
+            <widget class="QPushButton" name="decodeBtn">
              <property name="text">
               <string>Dekoduj swoim kluczem prywatnym</string>
              </property>
