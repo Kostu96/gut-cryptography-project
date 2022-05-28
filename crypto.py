@@ -55,7 +55,7 @@ def saveKey(key: AsymmetricKey, name: str, password: str = None):
 def loadKeyFromStr(key: str, type: Literal['public', 'private'], password: str = None) -> AsymmetricKey:
     return loadKeyFromBytes(key.encode('utf-8'), type, password)
 
-def loadKeyFromBytes(key: str, type: Literal['public', 'private'], password: str = None) -> AsymmetricKey:
+def loadKeyFromBytes(key: bytes, type: Literal['public', 'private'], password: str = None) -> AsymmetricKey:
     if type == 'public':
         return AsymmetricKey(serialization.load_pem_public_key(key))
     elif type == 'private':
