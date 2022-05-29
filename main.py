@@ -4,6 +4,7 @@ from argparse import ArgumentParser, SUPPRESS
 from ui import UI
 from crypto import *
 
+
 def parse_arguments() -> ArgumentParser:
     parser = ArgumentParser(add_help=False, description='Program do generowania kluczy asymetrycznych oraz szyfrowania i deszyfrowania plików')
     parser.add_argument('-h', '--help', action='help', default=SUPPRESS, help='Wyświetl pomoc i zakończ.')
@@ -40,6 +41,7 @@ def parse_arguments() -> ArgumentParser:
 
     return parser
 
+
 def test():
     """ encrypts text with every symmetric algorithm with every key size and then decrypts """
     public, private = generate_keys()
@@ -58,7 +60,8 @@ def test():
             print(f'{text} = {decrypt(encrypted_file, private)}')
         else:
             print(f'{text} = {decrypt(encrypted_file, private_ECC)}')
-    
+
+
 def main(args: dict[str, Any]):
     #test()
     if args['command'] is None:

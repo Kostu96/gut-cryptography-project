@@ -11,6 +11,7 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.ciphers.aead import AESSIV
 
+
 def generate_keys(type: AsymmetricAlgorithm = AsymmetricAlgorithm.RSA, length: int = 2048) -> tuple[AsymmetricKey, AsymmetricKey]:
     """
     :param AsymmetricAlgorithm type: Either RSA or ECC(Elliptic-Curve Cryptography)
@@ -36,6 +37,7 @@ def generate_keys(type: AsymmetricAlgorithm = AsymmetricAlgorithm.RSA, length: i
 
     return AsymmetricKey(public_key), AsymmetricKey(private_key)
 
+
 def saveKey(key: AsymmetricKey, name: str, password: str = None):
     """ Saves key in PEM format in private/ or public/ directory
     :param AsymmetricKey key: key to save
@@ -52,8 +54,10 @@ def saveKey(key: AsymmetricKey, name: str, password: str = None):
     with open(path, 'w', encoding='utf-8') as file:
         print(key.toString(password=password), file=file)
 
+
 def loadKeyFromStr(key: str, type: Literal['public', 'private'], password: str = None) -> AsymmetricKey:
     return loadKeyFromBytes(key.encode('utf-8'), type, password)
+
 
 def loadKeyFromBytes(key: str, type: Literal['public', 'private'], password: str = None) -> AsymmetricKey:
     if type == 'public':
@@ -61,6 +65,7 @@ def loadKeyFromBytes(key: str, type: Literal['public', 'private'], password: str
     elif type == 'private':
         passwd = None if password is None else password.encode('utf-8')
         return AsymmetricKey(serialization.load_pem_private_key(key, password=passwd))
+
 
 def loadPrivateKeyFromFile(path: str, password: str = None) -> AsymmetricKey:
     """ load private key in PEM format
@@ -70,9 +75,11 @@ def loadPrivateKeyFromFile(path: str, password: str = None) -> AsymmetricKey:
     with open(path, 'r', encoding='utf-8') as key_file:
         return loadKeyFromStr(key_file.read(), 'private', password)
 
+
 def loadPublicKeyFromFile(path: str) -> AsymmetricKey:
     with open(path, 'r', encoding='utf-8') as key_file:
         return loadKeyFromStr(key_file.read(), 'public')
+
 
 def encrypt(data: bytes, public_key: AsymmetricKey, symmetric_encryption: SymmetricAlgorithm = SymmetricAlgorithm.LIB_DEFAULT, symmetric_key_length: int = None) -> EncryptedFile:
     """ generates symmetric key, encrypts data with this key, encrypts symmetric key with public_key
@@ -100,7 +107,7 @@ def encrypt(data: bytes, public_key: AsymmetricKey, symmetric_encryption: Symmet
     elif symmetric_encryption == SymmetricAlgorithm.LIB_DEFAULT:
         fernet = Fernet(key)
         encrypted_data = fernet.encrypt(data)
-    elif symmetric_encryption.value >= SymmetricAlgorithm.ChaCha20_Poly1305.value and symmetric_encryption.value < SymmetricAlgorithm.AES_SIV.value:
+    elif SymmetricAlgorithm.ChaCha20_Poly1305.value <= symmetric_encryption.value < SymmetricAlgorithm.AES_SIV.value:
         cipher = ENUM_TO_CLASS[symmetric_encryption]
         encryptor = cipher(key)
         encrypted_data = encryptor.encrypt(nonce[:12], data, None)
@@ -126,11 +133,12 @@ def encrypt(data: bytes, public_key: AsymmetricKey, symmetric_encryption: Symmet
         asym_alg_type = AsymmetricAlgorithm.ECC_SECP256K1
 
     return EncryptedFile(encrypted_data=encrypted_data,
-                        asymmetric_alg=asym_alg_type,
-                        symmetric_alg=symmetric_encryption,
-                        symmetric_key_length=symmetric_key_length,
-                        e_key=e_key,
-                        encrypted_nonce=encrypted_nonce)
+                         asymmetric_alg=asym_alg_type,
+                         symmetric_alg=symmetric_encryption,
+                         symmetric_key_length=symmetric_key_length,
+                         e_key=e_key,
+                         encrypted_nonce=encrypted_nonce)
+
 
 def decrypt(encrypted_file: bytes, private_key: AsymmetricKey) -> bytes:
     """ decrypts encrypted_file using private_key
@@ -156,7 +164,7 @@ def decrypt(encrypted_file: bytes, private_key: AsymmetricKey) -> bytes:
         decrypted_data = decryptAsymmetric(encrypted.encrypted_data, private_key)
     elif encrypted.symmetric_algorithm == SymmetricAlgorithm.LIB_DEFAULT:
         decrypted_data = Fernet(key).decrypt(encrypted.encrypted_data)
-    elif encrypted.symmetric_algorithm.value >= SymmetricAlgorithm.ChaCha20_Poly1305.value and encrypted.symmetric_algorithm.value < SymmetricAlgorithm.AES_SIV.value:
+    elif SymmetricAlgorithm.ChaCha20_Poly1305.value <= encrypted.symmetric_algorithm.value < SymmetricAlgorithm.AES_SIV.value:
         cipher = ENUM_TO_CLASS[encrypted.symmetric_algorithm]
         decrypted_data = cipher(key).decrypt(nonce[:12], encrypted.encrypted_data, None)
     elif encrypted.symmetric_algorithm == SymmetricAlgorithm.AES_SIV:
@@ -168,4 +176,3 @@ def decrypt(encrypted_file: bytes, private_key: AsymmetricKey) -> bytes:
         decrypted_data = unpadder.update(decrypted_data) + unpadder.finalize()
 
     return decrypted_data
-    
