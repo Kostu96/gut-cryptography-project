@@ -7,8 +7,10 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 
+
 def getDefaultPadding():
     return padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)
+
 
 def encryptAsymmetric(data: bytes, public_key: AsymmetricKey) -> bytes:
     """ encrypts data with public_key
@@ -32,7 +34,8 @@ def generateKeyFromSharedSecret(symmetric_encryption: SymmetricAlgorithm, symmet
     if symmetric_encryption == SymmetricAlgorithm.LIB_DEFAULT:
         derived_key = base64.urlsafe_b64encode(derived_key)
         nonce = None
-    return (derived_key, nonce)
+    return derived_key, nonce
+
 
 def generateSymmetricKey(symmetric_encryption: SymmetricAlgorithm, symmetric_key_length: int = None, shared_key: bytes = None) -> tuple[bytes, bytes]:
     if symmetric_encryption == SymmetricAlgorithm.NONE:

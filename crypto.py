@@ -36,6 +36,7 @@ def generate_keys(type: AsymmetricAlgorithm = AsymmetricAlgorithm.RSA, length: i
 
     return AsymmetricKey(public_key), AsymmetricKey(private_key)
 
+
 def saveKey(key: AsymmetricKey, name: str, password: str = None):
     """ Saves key in PEM format in private/ or public/ directory
     :param AsymmetricKey key: key to save
@@ -52,8 +53,10 @@ def saveKey(key: AsymmetricKey, name: str, password: str = None):
     with open(path, 'w', encoding='utf-8') as file:
         print(key.toString(password=password), file=file)
 
+
 def loadKeyFromStr(key: str, type: Literal['public', 'private'], password: str = None) -> AsymmetricKey:
     return loadKeyFromBytes(key.encode('utf-8'), type, password)
+
 
 def loadKeyFromBytes(key: bytes, type: Literal['public', 'private'], password: str = None) -> AsymmetricKey:
     if type == 'public':
@@ -70,9 +73,11 @@ def loadPrivateKeyFromFile(path: str, password: str = None) -> AsymmetricKey:
     with open(path, 'r', encoding='utf-8') as key_file:
         return loadKeyFromStr(key_file.read(), 'private', password)
 
+
 def loadPublicKeyFromFile(path: str) -> AsymmetricKey:
     with open(path, 'r', encoding='utf-8') as key_file:
         return loadKeyFromStr(key_file.read(), 'public')
+
 
 def encrypt(data: bytes, public_key: AsymmetricKey, symmetric_encryption: SymmetricAlgorithm = SymmetricAlgorithm.LIB_DEFAULT, symmetric_key_length: int = None) -> EncryptedFile:
     """ generates symmetric key, encrypts data with this key, encrypts symmetric key with public_key
@@ -168,4 +173,3 @@ def decrypt(encrypted_file: bytes, private_key: AsymmetricKey) -> bytes:
         decrypted_data = unpadder.update(decrypted_data) + unpadder.finalize()
 
     return decrypted_data
-    

@@ -91,5 +91,6 @@ def main():
     showTestImage(image_to_test, public_key, private_key, SymmetricAlgorithm.AES_GCM, 256)
     plt.show()
 
+
 if __name__ == "__main__":
     main()
