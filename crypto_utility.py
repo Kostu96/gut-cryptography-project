@@ -21,11 +21,9 @@ def encryptAsymmetric(data: bytes, public_key: AsymmetricKey) -> bytes:
     encrypted_data = public_key.key.encrypt(data, getDefaultPadding())
     return encrypted_data
 
-
 def decryptAsymmetric(encrypted_data: bytes, private_key: AsymmetricKey) -> bytes:
     decrypted_data = private_key.key.decrypt(encrypted_data, getDefaultPadding())
     return decrypted_data
-
 
 def generateKeyFromSharedSecret(symmetric_encryption: SymmetricAlgorithm, symmetric_key_length: int = None, shared_key: bytes = None) -> tuple[bytes, bytes]:
     length = 32

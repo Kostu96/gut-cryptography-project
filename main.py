@@ -1,7 +1,5 @@
 from typing import Any
-from PyQt5.QtWidgets import QApplication
 from argparse import ArgumentParser, SUPPRESS
-from ui import UI
 from crypto import *
 
 
@@ -65,6 +63,9 @@ def test():
 def main(args: dict[str, Any]):
     #test()
     if args['command'] is None:
+        from PyQt5.QtWidgets import QApplication
+        from ui import UI
+        
         app = QApplication([])
         _ = UI()
         app.exec()

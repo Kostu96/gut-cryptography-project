@@ -18,7 +18,6 @@ class SymmetricAlgorithm(Enum):
     # NOT AUTHENTICATED
     AES_CBC = 6
 
-
 class AsymmetricAlgorithm(Enum):
     RSA = 0
     ECC_SECP256K1 = 1
@@ -42,7 +41,6 @@ ENUM_TO_CLASS: dict[Union[AESGCM, AESCCM, AESSIV, ChaCha20Poly1305]] = {
     SymmetricAlgorithm.AES_CCM : AESCCM,
     SymmetricAlgorithm.AES_SIV : AESSIV,
     SymmetricAlgorithm.ChaCha20_Poly1305 : ChaCha20Poly1305}
-
 
 class AsymmetricKey:
     def __init__(self, key: Union[RSAPrivateKey, RSAPublicKey, EllipticCurvePrivateKey, EllipticCurvePublicKey]) -> None:

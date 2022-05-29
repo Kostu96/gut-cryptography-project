@@ -9,7 +9,6 @@ Pixel = tuple[int, int, int]
 Row = list[Pixel]
 Image = list[Row]
 
-
 def bytesToImage(bytes_arr: bytes, row_size: int = None) -> Image:
     if row_size is None:
         row_size = int(math.sqrt(len(bytes_arr) / 3))
@@ -31,7 +30,6 @@ def bytesToImage(bytes_arr: bytes, row_size: int = None) -> Image:
 
     return image
 
-
 def imageToBytes(image: Image) -> bytes:
     serialized: bytearray = bytearray()
     for row in image:
@@ -39,7 +37,6 @@ def imageToBytes(image: Image) -> bytes:
             for color in pixel:
                 serialized.append(color.to_bytes(1, 'little')[0])
     return bytes(serialized)
-
 
 def showTestImage(image: list[Row], public_key: AsymmetricKey, private_key: AsymmetricKey, symmetric_alg: SymmetricAlgorithm, key_length: int = None, columns: int = 3):
     image_bytes = imageToBytes(image)
