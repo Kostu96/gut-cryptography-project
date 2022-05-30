@@ -32,6 +32,8 @@ class UI(QMainWindow):
         self.encodeBtn.clicked.connect(self.encode_btn_clicked)
         self.saveEncodedFileBtn.clicked.connect(self.save_keys_btn_clicked)
 
+        self.loadPrivKeyBtn.clicked.connect(self.load_priv_key_btn_clicked)
+        self.loadFileToDecodeBtn.clicked.connect(self.load_file_to_decode_btn_clicked)
         self.decodeBtn.clicked.connect(self.decode_btn_clicked)
 
         self.show()
@@ -89,5 +91,24 @@ class UI(QMainWindow):
             file.write(self.encrypted_file)
             file.close()
 
+    def load_priv_key_btn_clicked(self):
+        filename, ok = QFileDialog.getOpenFileName(self, "Open file", "public\\", "key files (*.key)")
+        if ok:
+            file = open(filename, "r")
+            priv_key = file.read()
+            file.close()
+            self.privKeyTextEdit1.setPlainText(priv_key)
+
+    def load_file_to_decode_btn_clicked(self):
+        filename, ok = QFileDialog.getOpenFileName(self, "Open file", "c:\\", "All files (*)")
+        if ok:
+            file = open(filename, "rb")
+            bytes = file.read()
+            file.close()
+            self.encrypted_file = EncryptedFile(bytes)
+            self.fileToEncodeLineEdit.setText(self.encrypted_file.getPrintableFile().decode("utf-8"))
+
     def decode_btn_clicked(self):
-        pass
+        priv_key = loadKeyFromStr(self.privKeyTextEdit1.toPlainText(), "private", self.pswLineEdit1.text())
+        file = crypto.decrypt(self.encrypted_file, priv_key)
+        self.decodedFileLineEdit.setText(file.decode("utf-8"))
