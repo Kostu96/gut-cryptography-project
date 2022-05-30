@@ -16,6 +16,7 @@ class UI(QMainWindow):
 
         asymAlgoComboBoxValues = ["RSA", "ECC_SECP256K1"]
         self.asymAlgoComboBox.addItems(asymAlgoComboBoxValues)
+        self.asymAlgoComboBox.currentTextChanged.connect(self.asym_algo_combo_changed)
         bitsComboBoxValues = map(lambda x: str(x), KEY_LENGTHS[AsymmetricAlgorithm.RSA])
         self.bitsComboBox.addItems(bitsComboBoxValues)
         self.genKeysBtn.clicked.connect(self.gen_keys_btn_clicked)
@@ -30,7 +31,9 @@ class UI(QMainWindow):
         self.loadPubKeyBtn.clicked.connect(self.load_pub_key_btn_clicked)
         self.loadFileToEncodeBtn.clicked.connect(self.load_file_to_encode_btn_clicked)
         self.encodeBtn.clicked.connect(self.encode_btn_clicked)
-        self.saveEncodedFileBtn.clicked.connect(self.save_keys_btn_clicked)
+        self.saveEncodedFileBtn.clicked.connect(self.save_encoded_file_btn_clicked)
+
+        self.saveDecodedFileBtn.clicked.connect(self.save_decoded_file_btn_clicked)
 
         self.loadPrivKeyBtn.clicked.connect(self.load_priv_key_btn_clicked)
         self.loadFileToDecodeBtn.clicked.connect(self.load_file_to_decode_btn_clicked)
@@ -39,6 +42,7 @@ class UI(QMainWindow):
         self.loaded_encrypted_file = None
         self.encrypted_file = None
         self.loaded_file_to_encode = None
+        self.decoded_file = None
 
         self.show()
 
@@ -59,6 +63,11 @@ class UI(QMainWindow):
 
             saveKey(loadKeyFromStr(self.privKeyTextEdit.toPlainText(), 'private'), name, passwd)
             saveKey(loadKeyFromStr(self.pubKeyTextEdit.toPlainText(), 'public'), name)
+
+    def asym_algo_combo_changed(self, value):
+        asymAlgoBitsComboBoxValues = map(lambda x: str(x), KEY_LENGTHS[AsymmetricAlgorithm[value]])
+        self.bitsComboBox.clear()
+        self.bitsComboBox.addItems(asymAlgoBitsComboBoxValues)
 
     def sym_algo_combo_changed(self, value):
         symAlgoBitsComboBoxValues = map(lambda x: str(x), KEY_LENGTHS[SymmetricAlgorithm[value]])
@@ -101,9 +110,8 @@ class UI(QMainWindow):
             return
         filename, ok = QFileDialog.getSaveFileName(self, "Save file", '.', "All files (*)")
         if ok:
-            file = open(filename, "wb")
-            file.write(self.encrypted_file)
-            file.close()
+            with open(filename, "wb") as file:
+                file.write(self.encrypted_file.encrypted_file)
 
     def load_priv_key_btn_clicked(self):
         filename, ok = QFileDialog.getOpenFileName(self, "Open file", "private\\", "key files (*.key)")
@@ -129,7 +137,15 @@ class UI(QMainWindow):
             passwd = self.pswLineEdit1.text()
         try:
             priv_key = loadKeyFromStr(self.privKeyTextEdit1.toPlainText(), "private", passwd)
-            file = crypto.decrypt(self.loaded_encrypted_file, priv_key)
-            self.decodedFileLineEdit.setText(file.decode("utf-8"))
+            self.decoded_file = crypto.decrypt(self.loaded_encrypted_file, priv_key)
+            self.decodedFileLineEdit.setText(self.decoded_file.decode("utf-8"))
         except (ValueError, TypeError) as e:
             self.decodedFileLineEdit.setText(e.__str__())
+
+    def save_decoded_file_btn_clicked(self):
+        if self.decoded_file is None:
+            return
+        filename, ok = QFileDialog.getSaveFileName(self, "Save file", '.', "All files (*)")
+        if ok:
+            with open(filename, "wb") as file:
+                file.write(self.decoded_file)
