@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_1">
      <attribute name="title">
@@ -36,19 +36,39 @@
         <x>10</x>
         <y>10</y>
         <width>601</width>
-        <height>376</height>
+        <height>491</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
-          <widget class="QPushButton" name="genKeysBtn">
+          <widget class="QLabel" name="label_10">
            <property name="text">
-            <string>Generuj klucze</string>
+            <string>Algorytm asymetryczny</string>
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QComboBox" name="asymAlgoComboBox"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
@@ -75,6 +95,17 @@
             </size>
            </property>
           </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="genKeysBtn">
+           <property name="text">
+            <string>Generuj klucze</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -152,7 +183,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit"/>
+          <widget class="QLineEdit" name="pswLineEdit"/>
          </item>
          <item>
           <spacer name="horizontalSpacer_7">
@@ -219,7 +250,7 @@
         <x>10</x>
         <y>10</y>
         <width>601</width>
-        <height>481</height>
+        <height>491</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -515,7 +546,7 @@
         <x>10</x>
         <y>10</y>
         <width>601</width>
-        <height>481</height>
+        <height>491</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -536,7 +567,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="genKeysBtn_7">
+              <widget class="QPushButton" name="loadPrivKeyBtn">
                <property name="text">
                 <string>Wczytaj</string>
                </property>
@@ -545,7 +576,7 @@
             </layout>
            </item>
            <item>
-            <widget class="QPlainTextEdit" name="privKeyTextEdit_1">
+            <widget class="QPlainTextEdit" name="privKeyTextEdit1">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                <horstretch>0</horstretch>
@@ -583,7 +614,7 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_15">
              <item>
-              <widget class="QLineEdit" name="lineEdit_2"/>
+              <widget class="QLineEdit" name="pswLineEdit1"/>
              </item>
             </layout>
            </item>
@@ -616,7 +647,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_21">
+            <widget class="QPushButton" name="loadFileToDecodeBtn">
              <property name="text">
               <string>Wczytaj</string>
              </property>
@@ -645,7 +676,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QLineEdit" name="msgTypedLineEdit_6"/>
+          <widget class="QLineEdit" name="fileToDecodeLineEdit"/>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_33">
@@ -694,7 +725,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_24">
+            <widget class="QPushButton" name="saveDecodedFileBtn">
              <property name="text">
               <string>Zapisz</string>
              </property>
@@ -723,7 +754,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QLineEdit" name="msgEncodedLineEdit_6">
+          <widget class="QLineEdit" name="decodedFileLineEdit">
            <property name="readOnly">
             <bool>true</bool>
            </property>

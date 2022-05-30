@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QInputDialog
 from PyQt5 import uic
 
 import crypto
@@ -10,8 +10,12 @@ class UI(QMainWindow):
     def __init__(self):
         super(UI, self).__init__()
 
+        self.encrypted_file = None
+
         uic.loadUi("application.ui", self)
 
+        asymAlgoComboBoxValues = ["RSA", "ECC_SECP256K1"]
+        self.asymAlgoComboBox.addItems(asymAlgoComboBoxValues)
         bitsComboBoxValues = map(lambda x: str(x), KEY_LENGTHS[AsymmetricAlgorithm.RSA])
         self.bitsComboBox.addItems(bitsComboBoxValues)
         self.genKeysBtn.clicked.connect(self.gen_keys_btn_clicked)
@@ -34,18 +38,19 @@ class UI(QMainWindow):
 
     def gen_keys_btn_clicked(self):
         bits = int(self.bitsComboBox.currentText())
-        [pub_key, priv_key] = generate_keys(AsymmetricAlgorithm.RSA, bits)
+        [pub_key, priv_key] = generate_keys(AsymmetricAlgorithm[self.asymAlgoComboBox.currentText()], bits)
         self.pubKeyTextEdit.setPlainText(pub_key.__str__())
         self.privKeyTextEdit.setPlainText(priv_key.__str__())
 
     def save_keys_btn_clicked(self):
-        dir = QFileDialog.getExistingDirectory(self, 'Open file', 'c:\\')
-        f_priv = open(dir + "/private.txt", "w")
-        f_priv.write(self.privKeyTextEdit.toPlainText())
-        f_priv.close()
-        f_pub = open(dir + "/public.txt", "w")
-        f_pub.write(self.pubKeyTextEdit.toPlainText())
-        f_pub.close()
+        name, ok = QInputDialog.getText(self, 'save dialog', 'Podaj nazwę kluczy:')
+        if ok:
+            passwd = self.pswLineEdit.text()
+            if passwd == "":
+                passwd = None
+
+            saveKey(loadKeyFromStr(self.privKeyTextEdit.toPlainText(), 'private'), name, passwd)
+            saveKey(loadKeyFromStr(self.pubKeyTextEdit.toPlainText(), 'public'), name)
 
     def sym_algo_combo_changed(self, value):
         symAlgoBitsComboBoxValues = map(lambda x: str(x), KEY_LENGTHS[SymmetricAlgorithm[value]])
@@ -53,31 +58,36 @@ class UI(QMainWindow):
         self.symAlgoBitsComboBox.addItems(symAlgoBitsComboBoxValues)
 
     def load_pub_key_btn_clicked(self):
-        filename, _ = QFileDialog.getOpenFileName(self, "Open file", "c:\\", "Text files (*.txt)")
-        file = open(filename, "r")
-        pub_key = file.read()
-        file.close()
-        self.pubKeyTextEdit1.setPlainText(pub_key)
+        filename, ok = QFileDialog.getOpenFileName(self, "Open file", "public\\", "key files (*.key)")
+        if ok:
+            file = open(filename, "r")
+            pub_key = file.read()
+            file.close()
+            self.pubKeyTextEdit1.setPlainText(pub_key)
 
     def load_file_to_encode_btn_clicked(self):
-        filename, _ = QFileDialog.getOpenFileName(self, "Open file", "c:\\", "All files (*)")
-        file = open(filename, "r")
-        str = file.read()
-        file.close()
-        self.fileToEncodeLineEdit.setText(str)
-        pass
+        filename, ok = QFileDialog.getOpenFileName(self, "Open file", "c:\\", "All files (*)")
+        if ok:
+            file = open(filename, "r")
+            str = file.read()
+            file.close()
+            self.fileToEncodeLineEdit.setText(str)
 
     def encode_btn_clicked(self):
         pub_key = loadKeyFromStr(self.pubKeyTextEdit1.toPlainText(), "public")
         file = self.fileToEncodeLineEdit.text()
-        encrypted_file = crypto.encrypt(str.encode(file, "utf-8"),
-                                        pub_key,
-                                        SymmetricAlgorithm[self.symAlgoComboBox.currentText()],
-                                        int(self.symAlgoBitsComboBox.currentText()))
-        self.encodedFileLineEdit.setText(encrypted_file.getPrintableFile().decode("utf-8"))
+        self.encrypted_file = crypto.encrypt(str.encode(file, "utf-8"),
+                                             pub_key,
+                                             SymmetricAlgorithm[self.symAlgoComboBox.currentText()],
+                                             int(self.symAlgoBitsComboBox.currentText()))
+        self.encodedFileLineEdit.setText(self.encrypted_file.getPrintableFile().decode("utf-8"))
 
     def save_encoded_file_btn_clicked(self):
-        pass
+        filename, ok = QFileDialog.getSaveFileName(self, "Save file", "c:\\", "All files (*)")
+        if ok:
+            file = open(filename, "wb")
+            file.write(self.encrypted_file)
+            file.close()
 
     def decode_btn_clicked(self):
         pass
