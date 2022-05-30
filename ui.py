@@ -21,10 +21,10 @@ class UI(QMainWindow):
         self.genKeysBtn.clicked.connect(self.gen_keys_btn_clicked)
         self.saveKeysBtn.clicked.connect(self.save_keys_btn_clicked)
 
-        symAlgoComboBoxValues = ["ChaCha20_Poly1305", "AES_GCM", "AES_CCM", "AES_SIV", "AES_CBC"]
+        symAlgoComboBoxValues = SymmetricAlgorithm.__members__
         self.symAlgoComboBox.addItems(symAlgoComboBoxValues)
         self.symAlgoComboBox.currentTextChanged.connect(self.sym_algo_combo_changed)
-        symAlgoBitsComboBoxValues = map(lambda x: str(x), KEY_LENGTHS[SymmetricAlgorithm.ChaCha20_Poly1305])
+        symAlgoBitsComboBoxValues = []
         self.symAlgoBitsComboBox.addItems(symAlgoBitsComboBoxValues)
 
         self.loadPubKeyBtn.clicked.connect(self.load_pub_key_btn_clicked)
@@ -36,6 +36,10 @@ class UI(QMainWindow):
         self.loadFileToDecodeBtn.clicked.connect(self.load_file_to_decode_btn_clicked)
         self.decodeBtn.clicked.connect(self.decode_btn_clicked)
 
+        self.loaded_encrypted_file = None
+        self.encrypted_file = None
+        self.loaded_file_to_encode = None
+
         self.show()
 
     def gen_keys_btn_clicked(self):
@@ -45,6 +49,8 @@ class UI(QMainWindow):
         self.privKeyTextEdit.setPlainText(priv_key.__str__())
 
     def save_keys_btn_clicked(self):
+        if not self.privKeyTextEdit.toPlainText():
+            return
         name, ok = QInputDialog.getText(self, 'save dialog', 'Podaj nazwę kluczy:')
         if ok:
             passwd = self.pswLineEdit.text()
@@ -68,31 +74,39 @@ class UI(QMainWindow):
             self.pubKeyTextEdit1.setPlainText(pub_key)
 
     def load_file_to_encode_btn_clicked(self):
-        filename, ok = QFileDialog.getOpenFileName(self, "Open file", "c:\\", "All files (*)")
+        filename, ok = QFileDialog.getOpenFileName(self, "Open file", ".", "All files (*)")
         if ok:
-            file = open(filename, "r")
-            str = file.read()
-            file.close()
-            self.fileToEncodeLineEdit.setText(str)
+            with open(filename, "rb") as file:
+                self.loaded_file_to_encode = file.read()
+
+            self.fileToEncodeLineEdit.setText(self.loaded_file_to_encode[:100].decode('cp437'))
 
     def encode_btn_clicked(self):
+        file = self.loaded_file_to_encode
+        if not file:
+            return
         pub_key = loadKeyFromStr(self.pubKeyTextEdit1.toPlainText(), "public")
-        file = self.fileToEncodeLineEdit.text()
-        self.encrypted_file = crypto.encrypt(str.encode(file, "utf-8"),
-                                             pub_key,
-                                             SymmetricAlgorithm[self.symAlgoComboBox.currentText()],
-                                             int(self.symAlgoBitsComboBox.currentText()))
-        self.encodedFileLineEdit.setText(self.encrypted_file.getPrintableFile().decode("utf-8"))
+        key_length = int(self.symAlgoBitsComboBox.currentText()) if self.symAlgoBitsComboBox.currentText() else None
+        try:
+            self.encrypted_file = crypto.encrypt(file,
+                                                pub_key,
+                                                SymmetricAlgorithm[self.symAlgoComboBox.currentText()],
+                                                key_length)
+            self.encodedFileLineEdit.setText(self.encrypted_file.getPrintableFile().decode("utf-8"))
+        except ValueError as e:
+            self.encodedFileLineEdit.setText(e.__str__())
 
     def save_encoded_file_btn_clicked(self):
-        filename, ok = QFileDialog.getSaveFileName(self, "Save file", "c:\\", "All files (*)")
+        if self.encrypted_file is None:
+            return
+        filename, ok = QFileDialog.getSaveFileName(self, "Save file", '.', "All files (*)")
         if ok:
             file = open(filename, "wb")
             file.write(self.encrypted_file)
             file.close()
 
     def load_priv_key_btn_clicked(self):
-        filename, ok = QFileDialog.getOpenFileName(self, "Open file", "public\\", "key files (*.key)")
+        filename, ok = QFileDialog.getOpenFileName(self, "Open file", "private\\", "key files (*.key)")
         if ok:
             file = open(filename, "r")
             priv_key = file.read()
@@ -100,15 +114,22 @@ class UI(QMainWindow):
             self.privKeyTextEdit1.setPlainText(priv_key)
 
     def load_file_to_decode_btn_clicked(self):
-        filename, ok = QFileDialog.getOpenFileName(self, "Open file", "c:\\", "All files (*)")
+        filename, ok = QFileDialog.getOpenFileName(self, "Open file", '', "All files (*)")
         if ok:
             file = open(filename, "rb")
-            bytes = file.read()
+            self.loaded_encrypted_file = file.read()
             file.close()
-            self.encrypted_file = EncryptedFile(bytes)
-            self.fileToEncodeLineEdit.setText(self.encrypted_file.getPrintableFile().decode("utf-8"))
+            self.fileToDecodeLineEdit.setText(self.loaded_encrypted_file.decode('cp437'))
 
     def decode_btn_clicked(self):
-        priv_key = loadKeyFromStr(self.privKeyTextEdit1.toPlainText(), "private", self.pswLineEdit1.text())
-        file = crypto.decrypt(self.encrypted_file, priv_key)
-        self.decodedFileLineEdit.setText(file.decode("utf-8"))
+        passwd = None
+        if self.loaded_encrypted_file is None:
+            return
+        if self.pswLineEdit1.text():
+            passwd = self.pswLineEdit1.text()
+        try:
+            priv_key = loadKeyFromStr(self.privKeyTextEdit1.toPlainText(), "private", passwd)
+            file = crypto.decrypt(self.loaded_encrypted_file, priv_key)
+            self.decodedFileLineEdit.setText(file.decode("utf-8"))
+        except (ValueError, TypeError) as e:
+            self.decodedFileLineEdit.setText(e.__str__())
